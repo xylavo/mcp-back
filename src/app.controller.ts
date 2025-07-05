@@ -9,4 +9,8 @@ export class AppController {
   addTwoNumbers(@Body() body: { a: number; b: number }): {result: number} {
     return {result: this.appService.addTwoNumbers(body)};
   }
+  @Post("")
+  getTools(): {result: object} {
+    return {result: this.appService.getTools()};
+  }
 }
