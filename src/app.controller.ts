@@ -6,11 +6,11 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post("add")
-  addTwoNumbers(@Body() body: { a: number; b: number }): {result: number} {
-    return {result: this.appService.addTwoNumbers(body)};
+  addTwoNumbers(@Body() body: { a: number; b: number }): number {
+    return this.appService.addTwoNumbers(body);
   }
   @Post("")
-  getTools(): {result: object} {
-    return {result: this.appService.getTools()};
+  getTools(): object {
+    return this.appService.getTools();
   }
 }
