@@ -20,11 +20,14 @@ export class TodoService {
   }
 
   async create(todoData: Partial<Todo>): Promise<Todo> {
-    const todo = this.todoRepository.create(todoData);
-    if (todoData.scheduledAt) {
-      const koreaTime = new Date(todoData.scheduledAt).getTime() + (9 * 60 * 60 * 1000);
-      todoData.scheduledAt =new Date(koreaTime);
+    if(todoData.scheduledAt){
+      todoData.scheduledAt = new Date(todoData.scheduledAt)
     }
+    const todo = this.todoRepository.create(todoData);
+    // if (todoData.scheduledAt) {
+    //   const koreaTime = new Date(todoData.scheduledAt).getTime() + (9 * 60 * 60 * 1000);
+    //   todo.scheduledAt =new Date(koreaTime);
+    // }
     return this.todoRepository.save(todo);
   }
 
@@ -38,10 +41,10 @@ export class TodoService {
     todo.completed = todoData.completed ?? todo.completed;
     todo.scheduledAt = todoData.scheduledAt ?? todo.scheduledAt;
     todo.duration = todoData.duration ?? todo.duration;
-    if (todoData.scheduledAt) {
-      const koreaTime = new Date(todoData.scheduledAt).getTime() + (9 * 60 * 60 * 1000);
-      todoData.scheduledAt =new Date(koreaTime);
-    }
+    // if (todoData.scheduledAt) {
+    //   const koreaTime = new Date(todoData.scheduledAt).getTime() + (9 * 60 * 60 * 1000);
+    //   todoData.scheduledAt =new Date(koreaTime);
+    // }
     await this.todoRepository.save(todo);
     return this.findOne(id);
   }
@@ -56,6 +59,16 @@ export class TodoService {
     
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
+
+    console.log(startOfDay, endOfDay)
+    console.log(await this.todoRepository.find({
+      where: {
+        scheduledAt: Between(startOfDay, endOfDay)
+      },
+      order: {
+        scheduledAt: 'ASC'
+      }
+    }))
 
     return this.todoRepository.find({
       where: {

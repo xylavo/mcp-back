@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { Todo } from './todo.entity';
+import * as moment from 'moment-timezone';
 
 @Controller('todos')
 export class TodoController {
@@ -36,6 +37,9 @@ export class TodoController {
   @Post('schedule')
   async findScheduledEvents(@Body() date: {date: string}): Promise<Todo[]> {
     const targetDate = new Date(date.date);
+    var seoul = moment.tz(date.date, "Asia/Seoul");
+    
+    console.log(seoul.format())
     return this.todoService.findScheduledEvents(targetDate);
   }
 

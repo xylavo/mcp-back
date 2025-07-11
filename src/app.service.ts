@@ -25,7 +25,7 @@ export class AppService {
       },
       {
         api_url: "todos",
-        description: "todo와 관련된 도구 항목을 조회합니다.",
+        description: "todo와 관련된 도구 항목을 조회합니다. 일정 추가, 수정, 삭제, 조회를 할 수 있습니다.",
         properties: {},
         required: [],
       }
