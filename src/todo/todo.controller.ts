@@ -39,7 +39,6 @@ export class TodoController {
     const targetDate = new Date(date.date);
     var seoul = moment.tz(date.date, "Asia/Seoul");
     
-    console.log(seoul.format())
     return this.todoService.findScheduledEvents(targetDate);
   }
 

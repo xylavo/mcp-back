@@ -1,98 +1,149 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# MCP Todo API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 프로젝트 개요
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+MCP Todo API는 Model Context Protocol(MCP)을 위한 Todo 관리 시스템입니다. 이 프로젝트는 AI Agent가 사용자의 할 일을 효율적으로 관리할 수 있도록 설계된 RESTful API 서버입니다.
 
-## Description
+## 프로젝트 목적
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **AI Agent 지원**: AI Agent가 사용자의 할 일을 생성, 조회, 수정, 삭제할 수 있는 API 제공
+- **스케줄 관리**: 날짜별 할 일 스케줄링 기능으로 시간 관리 지원
+- **MCP 통합**: Model Context Protocol을 통한 AI Agent와의 원활한 통신
+- **데이터 영속성**: SQLite 데이터베이스를 통한 안정적인 데이터 저장
 
-## Project setup
+## 기술 스택
 
-```bash
-$ npm install
+### 백엔드 프레임워크
+- **NestJS**: Node.js 기반의 TypeScript 서버 프레임워크
+- **TypeORM**: TypeScript ORM으로 데이터베이스 관리
+- **SQLite**: 경량 데이터베이스로 로컬 데이터 저장
+
+### 주요 라이브러리
+- **moment-timezone**: 시간대 처리 및 날짜 관리
+- **date-fns-tz**: 타임존 기반 날짜/시간 조작
+- **reflect-metadata**: TypeScript 메타데이터 리플렉션
+
+## 프로젝트 구조
+
+```
+src/
+├── app.module.ts          # 애플리케이션 메인 모듈
+├── main.ts               # 애플리케이션 진입점
+├── app.controller.ts     # 기본 컨트롤러
+├── app.service.ts        # 기본 서비스
+└── todo/                 # Todo 기능 모듈
+    ├── todo.module.ts    # Todo 모듈 설정
+    ├── todo.controller.ts # Todo API 엔드포인트
+    ├── todo.service.ts   # Todo 비즈니스 로직
+    └── todo.entity.ts    # Todo 데이터 모델
 ```
 
-## Compile and run the project
+## 데이터 모델
 
-```bash
-# development
-$ npm run start
+### Todo Entity
 
-# watch mode
-$ npm run start:dev
+```typescript
+@Entity()
+export class Todo {
+  @PrimaryGeneratedColumn()
+  id: number;                    // 고유 식별자
 
-# production mode
-$ npm run start:prod
+  @Column()
+  title: string;                 // 할 일 제목
+
+  @Column({ nullable: true })
+  description: string;           // 할 일 설명
+
+  @Column({ default: false })
+  completed: boolean;            // 완료 여부
+
+  @Column({ nullable: true })
+  scheduledAt: Date;            // 스케줄 날짜/시간
+
+  @Column({ nullable: true })
+  duration: number;             // 예상 소요 시간 (분)
+
+  @CreateDateColumn()
+  createdAt: Date;              // 생성 시간
+
+  @UpdateDateColumn()
+  updatedAt: Date;              // 수정 시간
+}
 ```
 
-## Run tests
+## API 엔드포인트
 
-```bash
-# unit tests
-$ npm run test
+### 기본 CRUD 작업
 
-# e2e tests
-$ npm run test:e2e
+| 메서드 | 엔드포인트 | 설명 |
+|--------|------------|------|
+| POST | `/todos/find-all` | 모든 Todo 항목 조회 |
+| POST | `/todos/find-id` | ID로 특정 Todo 조회 |
+| POST | `/todos/create` | 새로운 Todo 생성 |
+| POST | `/todos/update` | 기존 Todo 수정 |
+| POST | `/todos/delete` | Todo 삭제 |
 
-# test coverage
-$ npm run test:cov
-```
+### 스케줄 관리
 
-## Deployment
+| 메서드 | 엔드포인트 | 설명 |
+|--------|------------|------|
+| POST | `/todos/schedule` | 특정 날짜의 스케줄된 Todo 조회 |
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### API 도구 정보
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+| 엔드포인트 | `/todos` | API 도구 목록 반환 |
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+## 주요 기능
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 1. Todo 관리
+- **생성**: 제목, 설명, 스케줄, 예상 소요 시간 설정 가능
+- **조회**: 전체 목록 조회 및 ID 기반 개별 조회
+- **수정**: 제목, 설명, 완료 상태, 스케줄, 소요 시간 수정
+- **삭제**: ID 기반 Todo 항목 삭제
 
-## Resources
+### 2. 스케줄 관리
+- **날짜별 조회**: 특정 날짜의 모든 스케줄된 Todo 조회
+- **시간순 정렬**: 스케줄된 Todo를 시간순으로 정렬하여 반환
+- **타임존 지원**: 한국 시간대(Asia/Seoul) 지원
 
-Check out a few resources that may come in handy when working with NestJS:
+### 3. AI Agent 통합
+- **도구 정보 제공**: AI Agent가 사용할 수 있는 API 도구 목록 제공
+- **표준화된 응답**: JSON 형태의 일관된 응답 형식
+- **에러 처리**: 적절한 에러 메시지와 상태 코드 제공
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## 데이터베이스 설정
 
-## Support
+- **타입**: SQLite
+- **파일**: `database.sqlite`
+- **동기화**: 개발 환경에서 자동 스키마 동기화
+- **엔티티**: TypeORM을 통한 자동 테이블 생성
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 개발 환경
 
-## Stay in touch
+### 필수 요구사항
+- Node.js (v18 이상)
+- npm 또는 yarn
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### 의존성
+- **@nestjs/common**: NestJS 공통 모듈
+- **@nestjs/typeorm**: TypeORM 통합
+- **typeorm**: ORM 라이브러리
+- **sqlite3**: SQLite 데이터베이스 드라이버
+- **moment-timezone**: 시간대 처리
+- **date-fns-tz**: 날짜/시간 조작
 
-## License
+## 배포 고려사항
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- **데이터베이스**: 프로덕션 환경에서는 PostgreSQL 등으로 마이그레이션 권장
+- **환경 변수**: 데이터베이스 연결 정보를 환경 변수로 관리
+- **로깅**: 프로덕션 환경에서 적절한 로깅 설정 필요
+- **보안**: API 인증 및 권한 관리 추가 필요
+
+## 확장 가능성
+
+- **사용자 인증**: JWT 기반 사용자 인증 시스템
+- **카테고리 관리**: Todo 카테고리 분류 기능
+- **우선순위**: Todo 우선순위 설정 기능
+- **반복 작업**: 반복되는 Todo 설정 기능
+- **알림 시스템**: 스케줄 알림 기능
+- **통계 분석**: 완료율, 생산성 통계 제공

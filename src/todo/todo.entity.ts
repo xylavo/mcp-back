@@ -26,19 +26,4 @@ export class Todo {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @BeforeInsert()
-  setCreatedAt() {
-    // const now = new Date();
-    // const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
-    // this.createdAt = koreaTime;
-    // this.updatedAt = koreaTime;
-  }
-
-  @BeforeUpdate()
-  setUpdatedAt() {
-    // const now = new Date();
-    // const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
-    // this.updatedAt = koreaTime;
-    // console.log("업데이트 시간 설정:", now, koreaTime);
-  }
 } 
